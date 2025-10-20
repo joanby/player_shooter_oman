@@ -15,6 +15,8 @@ public class ScoreManager : MonoBehaviour
         set
         {
             _amount = value;
+            Debug.Log(_amount);
+
             if(_amount < 0 )
             {
                 _amount = 0;
