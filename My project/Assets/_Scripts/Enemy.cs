@@ -2,15 +2,13 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        EnemiesManager.sharedInstance.AddEnemy(this);
     }
 
-    // Update is called once per frame
-    void Update()
+    void OnDestroy()
     {
-        
+        EnemiesManager.sharedInstance.RemoveEnemy(this);
     }
 }
