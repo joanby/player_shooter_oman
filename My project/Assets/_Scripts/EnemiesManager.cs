@@ -5,7 +5,7 @@ public class EnemiesManager : MonoBehaviour
 {
     public static EnemiesManager sharedInstance;
 
-    private List<Enemy> enemies;
+    public List<Enemy> enemies;
 
     private void Awake()
     {
