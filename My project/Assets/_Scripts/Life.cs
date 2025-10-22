@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Life : MonoBehaviour
 {
 
     private float _amount;
+    public UnityEvent onDeath;
 
     public float amount
     {
@@ -12,6 +14,7 @@ public class Life : MonoBehaviour
             _amount = value;
             if (_amount <= 0)
             {
+                onDeath.Invoke();
                 Destroy(gameObject);
             }
         }
