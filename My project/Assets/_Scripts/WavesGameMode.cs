@@ -5,14 +5,16 @@ public class WavesGameMode : MonoBehaviour
 {
 
     [SerializeField] Life playerLife;
+    [SerializeField] Life playerBaseLife;
 
     private void Awake()
     {
-        playerLife.onDeath.AddListener(OnPlayerDied);
+        playerLife.onDeath.AddListener(OnPlayerOrBaseDied);
+        playerBaseLife.onDeath.AddListener(OnPlayerOrBaseDied);
     }
 
     //GAME OVER CONDITION
-    void OnPlayerDied()
+    void OnPlayerOrBaseDied()
     {
         SceneManager.LoadScene("You Lose");
     }
