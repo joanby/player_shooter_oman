@@ -7,10 +7,13 @@ public class WavesGameMode : MonoBehaviour
     [SerializeField] Life playerLife;
     [SerializeField] Life playerBaseLife;
 
-    private void Awake()
+    private void Start()
     {
         playerLife.onDeath.AddListener(OnPlayerOrBaseDied);
         playerBaseLife.onDeath.AddListener(OnPlayerOrBaseDied);
+
+        EnemiesManager.sharedInstance.onChange.AddListener(CheckWinCondition);
+        WaveManager.sharedInstance.onChange.AddListener(CheckWinCondition);
     }
 
     //GAME OVER CONDITION
@@ -18,16 +21,16 @@ public class WavesGameMode : MonoBehaviour
     {
         SceneManager.LoadScene("You Lose");
     }
-
-    // Update is called once per frame
-    void Update()
+    //GAME WIN CONDITION
+    void CheckWinCondition()
     {
-        //GAME WIN CONDITION
         //No more enemies and no more waves
-        if(EnemiesManager.sharedInstance.enemies.Count <=0 &&
+        if (EnemiesManager.sharedInstance.enemies.Count <= 0 &&
             WaveManager.sharedInstance.waves.Count <= 0)
         {
             SceneManager.LoadScene("You Win");
         }
     }
+
+   
 }
