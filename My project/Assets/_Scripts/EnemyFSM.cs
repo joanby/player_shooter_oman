@@ -35,6 +35,7 @@ public class EnemyFSM : MonoBehaviour
     private void Start()
     {
         baseTransform = GameObject.Find("PlayerBase").transform;
+        GoToBase();
     }
 
     //Logic of a FSM is always in the Update
@@ -62,6 +63,7 @@ public class EnemyFSM : MonoBehaviour
         //Instruct the AI to go to the player's base
         agent.isStopped = false;
         agent.SetDestination(baseTransform.position);
+        LookTo(baseTransform.position);
 
         //If the player is in the line of sight, let's chase him
         if(sightSensor.detectedObject!= null)
@@ -104,6 +106,7 @@ public class EnemyFSM : MonoBehaviour
 
         //Once I know I have the player in sight
         agent.SetDestination(sightSensor.detectedObject.transform.position);
+        LookTo(sightSensor.detectedObject.transform.position);
 
         //I get close enough to the player
         float distanceToPlayer = Vector3.Distance(this.transform.position,
