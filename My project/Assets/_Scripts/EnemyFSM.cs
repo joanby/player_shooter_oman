@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyFSM : MonoBehaviour
 {
@@ -21,6 +23,14 @@ public class EnemyFSM : MonoBehaviour
     public float baseAttackDistance;
     [Tooltip("Minimum distance to attack the player")]
     public float playerAttackDistance;
+
+    private NavMeshAgent agent;
+
+    private void Awake()
+    {
+        //The component is not on the AI, but in the parent
+        agent = GetComponentInParent<NavMeshAgent>();
+    }
 
     private void Start()
     {
@@ -49,6 +59,10 @@ public class EnemyFSM : MonoBehaviour
 
     void GoToBase()
     {
+        //Instruct the AI to go to the player's base
+        agent.isStopped = false;
+        agent.SetDestination(baseTransform.position);
+
         //If the player is in the line of sight, let's chase him
         if(sightSensor.detectedObject!= null)
         {
@@ -68,11 +82,19 @@ public class EnemyFSM : MonoBehaviour
 
     void AttackBase()
     {
-        print("Attacking Base");
+        //When we reach the base, the AI doens't need to move anymore
+        agent.isStopped = true;
+        //Look at the base before firing
+        LookTo(baseTransform.position);
+        //make it fire to the base
+        Shoot();
     }
 
     void ChasePlayer()
     {
+        //The enemy needs to move towards the player
+        agent.isStopped = false;
+
         //I lose the sight of the player
         if(sightSensor.detectedObject == null)
         {
@@ -80,6 +102,8 @@ public class EnemyFSM : MonoBehaviour
             return;
         }
 
+        //Once I know I have the player in sight
+        agent.SetDestination(sightSensor.detectedObject.transform.position);
 
         //I get close enough to the player
         float distanceToPlayer = Vector3.Distance(this.transform.position,
@@ -94,12 +118,23 @@ public class EnemyFSM : MonoBehaviour
 
     void AttackPlayer()
     {
+
+        //To attack the player, we stop the enemy from moving
+        agent.isStopped = true;
+        
+
         //If the player 'disappears' (or dies)
-        if(sightSensor.detectedObject == null)
+        if (sightSensor.detectedObject == null)
         {
             currentState = EnemyState.GoToBase;
             return;
         }
+
+        //After the IF; to ensure that sightsenor is NOT null
+        //I want the enemy to look to the player
+        LookTo(sightSensor.detectedObject.transform.position);
+        // attack the player
+        Shoot();
 
         //If the player goes far from the enemy, let's chase him
         float distanceToPlayer = Vector3.Distance(this.transform.position,
@@ -119,5 +154,37 @@ public class EnemyFSM : MonoBehaviour
         Gizmos.DrawWireSphere(this.transform.position, baseAttackDistance);
     }
 
+    public float lastShootTime; //To know how much time has it lapsed since the last shot
+    public GameObject bulletPrefab; //This is the prefab we're going to fire
+    public float fireRate; //How much time between two bullets being fired
+
+    /// <summary>
+    /// This method will shoot a bullet after the time has been lapsed.
+    /// </summary>
+    void Shoot()
+    {
+        float timeSinceLastShot = Time.time - lastShootTime; //How much time since last shot
+        if(timeSinceLastShot > fireRate) //If I have waited enough
+        {
+            lastShootTime = Time.time; //I record that now I'm going to fire a bullet
+            Instantiate(bulletPrefab, this.transform.position, this.transform.rotation);
+        }
+    }
+
+    
+    /// <summary>
+    /// Rotates the player to look at the target position
+    /// </summary>
+    /// <param name="targetPosition"></param>
+    void LookTo(Vector3 targetPosition)
+    {
+
+        //Calculate the direction from the enemy to the target
+        Vector3 directionToPosition =
+            Vector3.Normalize(targetPosition - this.transform.parent.position);
+        directionToPosition.y = 0; //I don't want the enemy to go up or down
+        //Change the forward direction of the parent to look towards the target
+        this.transform.parent.forward = directionToPosition;
+    }
 
 }
