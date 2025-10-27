@@ -26,10 +26,13 @@ public class EnemyFSM : MonoBehaviour
 
     private NavMeshAgent agent;
 
+    private Animator animator;
+
     private void Awake()
     {
         //The component is not on the AI, but in the parent
         agent = GetComponentInParent<NavMeshAgent>();
+        animator = GetComponentInParent<Animator>();
     }
 
     private void Start()
@@ -60,6 +63,9 @@ public class EnemyFSM : MonoBehaviour
 
     void GoToBase()
     {
+        //Stop shooting because we're running towards the base
+        animator.SetBool("Shooting", false);
+
         //Instruct the AI to go to the player's base
         agent.isStopped = false;
         agent.SetDestination(baseTransform.position);
@@ -94,6 +100,9 @@ public class EnemyFSM : MonoBehaviour
 
     void ChasePlayer()
     {
+
+        //Stop shooting because we're chasing the player
+        animator.SetBool("Shooting", false);
         //The enemy needs to move towards the player
         agent.isStopped = false;
 
@@ -166,6 +175,8 @@ public class EnemyFSM : MonoBehaviour
     /// </summary>
     void Shoot()
     {
+        animator.SetBool("Shooting", true);
+
         float timeSinceLastShot = Time.time - lastShootTime; //How much time since last shot
         if(timeSinceLastShot > fireRate) //If I have waited enough
         {
