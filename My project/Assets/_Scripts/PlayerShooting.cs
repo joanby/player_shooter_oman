@@ -12,6 +12,11 @@ public class PlayerShooting : MonoBehaviour
     //Remaining bullets for the player
     [SerializeField] private float bulletsAmount;
 
+    public float GetBullets()
+    {
+        return bulletsAmount;
+    }
+
 
     private Animator animator;
 

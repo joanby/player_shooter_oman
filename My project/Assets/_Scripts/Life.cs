@@ -33,6 +33,10 @@ public class Life : MonoBehaviour
         amount = initialLife;
     }
 
+    public float GetInitialLife()
+    {
+        return initialLife;
+    }
 
 
 }
